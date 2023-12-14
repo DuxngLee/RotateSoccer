@@ -1,34 +1,47 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using Script.Level.Controller;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
+namespace Script.Level
 {
-    public static LevelManager Instance;
+    using Script.Screens;
 
-    private LevelController level;
-    private int             currentLevel = 1;
-    
-    private void Awake()
+    public class LevelManager : MonoBehaviour
     {
-        Instance = this;
-    }
+        public static LevelManager Instance;
 
-    public void CompleteLevel()
-    {
-        this.currentLevel++;
-    }
+        private LevelController level;
+        private int             currentLevel = 1;
 
-    public void CreateLevel()
-    {
-        this.level = Instantiate(Resources.Load("")).GetComponent<LevelController>();
-    }
-    
-    public void DestroyLevel()
-    {
-        if(!this.level) return;
-        Destroy(this.level.gameObject);
+        private void Awake()
+        {
+            Instance = this;
+            this.CreateLevel();
+        }
+
+        public void CompleteLevel()
+        {
+            this.currentLevel++;
+            ScreenManager.Instance.OpenScreen("ScreenWin");
+        }
+
+        public void CreateLevel(int levelNumber = -1)
+        {
+            levelNumber = levelNumber == -1 ? this.currentLevel : levelNumber;
+            var levelName   = $"Levels/Level{levelNumber}";
+            var levelPrefab = Resources.Load<GameObject>(levelName);
+            this.level = Instantiate(levelPrefab)?.GetComponent<LevelController>();
+        }
+
+        public void DestroyLevel()
+        {
+            if (!this.level) return;
+            Destroy(this.level.gameObject);
+        }
+
+        public void NextLevel()
+        {
+            this.DestroyLevel();
+            this.CreateLevel();
+        }
     }
 }
