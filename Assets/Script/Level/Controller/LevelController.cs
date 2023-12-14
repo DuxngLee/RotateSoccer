@@ -3,36 +3,43 @@ using System.Collections;
 using System.Collections.Generic;
 using Script.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class LevelController : MonoBehaviour
+namespace Script.Level.Controller
 {
-    [SerializeField] private List<ControlPlayer> players;
-    private                  int                 countPlayerFinish;
-
-    private void Awake()
+    public class LevelController : MonoBehaviour
     {
-        foreach (var player in this.players)
+        [SerializeField] private List<ControlPlayer> players;
+        private                  int                 countPlayerFinish;
+
+        public int CountPlayer => this.players.Count;
+
+        private void Awake()
         {
-            player.OnFinish = this.ActionFinish;
-            player.OnLose   = this.ActionLose;
+            foreach (var player in this.players)
+            {
+                player.OnFinish = this.ActionFinish;
+                player.OnLose   = this.ActionLose;
+            }
+            //this.players.ForEach(player => player.OnFinish = this.ActionFinish);
         }
-        //this.players.ForEach(player => player.OnFinish = this.ActionFinish);
-    }
 
-    private void ActionFinish(ControlPlayer player)
-    {
-        if (!player.gameObject.activeSelf) return;
-        player.gameObject.SetActive(false);
-        this.countPlayerFinish++;
-        if (this.countPlayerFinish == this.players.Count)
+        private void ActionFinish(ControlPlayer player)
         {
-            // winScreen active
-            LevelManager.Instance.CompleteLevel();
+            if (!player.gameObject.activeSelf) return;
+            player.gameObject.SetActive(false);
+            this.countPlayerFinish++;
+            if (this.countPlayerFinish == this.players.Count)
+            {
+                // winScreen active
+                LevelManager.Instance.CompleteLevel();
+            }
         }
-    }
 
-    private void ActionLose(ControlPlayer player)
-    {
-        // xoa level di va load lai
+        private void ActionLose(ControlPlayer player)
+        {
+            LevelManager.Instance.DestroyLevel();
+            LevelManager.Instance.CreateLevel();
+        }
     }
 }

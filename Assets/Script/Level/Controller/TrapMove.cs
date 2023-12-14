@@ -24,7 +24,6 @@ namespace Script.Level.Controller
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
-                    // Sau khi di chuyển xong, quay trở lại vị trí ban đầu
                     this.moving = this.transform.DOLocalMove(this.defaultPosition, this.moveDuration)
                         .SetEase(Ease.Linear)
                         .OnComplete(
